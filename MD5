@@ -1,6 +1,6 @@
-faba9ef47cf14027d22944ba6c149ddf *DESCRIPTION
-ed7d9bdf8a5f125dbdac7cd5753f3a4b *NAMESPACE
-eca652c386f879ce2fe0ac7727e7d884 *NEWS.md
+921dab9b5354ed5742ccf96bc827fe84 *DESCRIPTION
+7ce9054630810c82fe7d5058f9b74283 *NAMESPACE
+a08dc4ed76493a2d7507647174935a1e *NEWS.md
 8c22db861bcd9f80580a59c7cd56f991 *R/american_options.R
 cf169a2569a6feb40b72b44efade37ac *R/blackscholes.R
 43114f58cd7f1b05a298c112565510bf *R/calibration.R
@@ -10,15 +10,15 @@ cc4d68e803b63e195ac37ac4aa6147cd *R/cashflows.R
 46dc0a0a2b492e49899373e294bc5e3f *R/implicit.R
 cb03b7a5d3261ccae5b1e2b18c81229a *R/instruments.R
 1c3b741351056aeab37120302eb715bb *R/ragtop.R
-42e6cb66bc3da3d3bbaab52ac2a9e6d6 *R/term_structures.R
+b0287282bbfdc00b91bc7f225d95d330 *R/term_structures.R
 730ced6f16bd43d43912d7cd6c36e3c5 *R/util.R
 abc00ca8f19a85d7f18e7b7e0d01af9d *R/zzz.R
 c7621077381d357cadfe0a844d4a9b5f *README.md
 4911a3656b65959c672ba177b801b1b1 *build/vignette.rds
 c9cc18a40d7fd68507df44a378c4a48b *data/TSLAMarket.rda
-3b7eae9f8825fcf7241f6f924cb8d124 *inst/doc/ragtop_convertibles_in_r.R
-168bfc6250ab559d59cd1f063bbde40f *inst/doc/ragtop_convertibles_in_r.Rmd
-141383e32f30b2bad1281db4adf084a1 *inst/doc/ragtop_convertibles_in_r.pdf
+124a385fcd55bbff271567a59ed9548d *inst/doc/ragtop_convertibles_in_r.R
+6f2949135fed856cd34d2049fcc24d3f *inst/doc/ragtop_convertibles_in_r.Rmd
+0a4384b9c7db8f61814406b07923626b *inst/doc/ragtop_convertibles_in_r.pdf
 5492c086ad32ff37c88baf9997ca7d97 *man/AmericanOption-class.Rd
 0c7839f2db135769b28eaf19315db53d *man/CALL.Rd
 2f9c856549b3a18e135ace2206df382d *man/CallableBond-class.Rd
@@ -44,6 +44,7 @@ d6cb8512b5e33afb528cf7035f760394 *man/blackscholes.Rd
 76b9662d4f5440286761339b9f9e7e80 *man/construct_tridiagonals.Rd
 fc7866f1452bdcc5786d552570cb7e6d *man/control_variate_pairs.Rd
 f69ea71c91dfc46b9ea9b2ec87e8c8a7 *man/coupon_value_at_exercise.Rd
+6536a0058918cb9a9f88bc2d035d3edc *man/detail_from_AnnivDates.Rd
 8a15a64d558946c1fa9645c551c2cf35 *man/equivalent_bs_vola_to_jump.Rd
 bfebb53c53cbf7ba99c6d14f60420638 *man/equivalent_jump_vola_to_bs.Rd
 6d400d414891873ebfdebedc76de915c *man/find_present_value.Rd
@@ -80,4 +81,4 @@ aef5851f7668256b2fd17a0a1346f5d7 *tests/testthat/test_calibration.R
 da7cc2e4136111c834a103a845c6d36b *tests/testthat/test_payoffs.R
 92a72dffef9b7cbb9f468aa0e4aafa63 *tests/testthat/test_term_structures.R
 a069dd333e0d8413639a6666a6b6370c *vignettes/converts.bib
-168bfc6250ab559d59cd1f063bbde40f *vignettes/ragtop_convertibles_in_r.Rmd
+6f2949135fed856cd34d2049fcc24d3f *vignettes/ragtop_convertibles_in_r.Rmd
