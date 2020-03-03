@@ -136,7 +136,6 @@ implied_volatility = function(option_price, callput, S0, K, r, time,
 #' Find default-free volatilities based on known interest rates and hazard rates, using
 #'   a given option price.
 #'
-#' @param ... Arguments passed to \code{\link{implied_volatility}}
 #' @param option_price Present option values (may be a vector)
 #' @param callput 1 for calls, -1 for puts (may be a vector)
 #' @param S0 initial underlying price (may be a vector)
@@ -413,7 +412,6 @@ implied_volatilities_with_rates_struct = function(option_price, callput, S0, K, 
 #'   parameters, \code{\link{black_scholes_on_term_structures}} for the underlying
 #'   pricing algorithm, \code{\link{implied_volatilities_with_rates_struct}} when
 #'   neither volatilities nor survival probabilities have a nontrivial term structure
-#' @inheritParams form_present_value_grid
 #' @param option_price Option price to match
 #' @param callput 1 for calls, -1 for puts
 #' @param S0 initial underlying price
@@ -667,8 +665,6 @@ american_implied_volatility = function(option_price, callput, S0, K, time,
 #' @seealso \code{\link{find_present_value}} for the underlying
 #'   pricing algorithm, \code{\link{implied_volatility_with_term_struct}} for European options
 #'   without equity dependence of default intensity, \code{\link{american_implied_volatility}} for the same on American options
-#' @inheritParams find_present_value
-#' @inheritParams american
 #' @param instrument Instrument to search for the target price on, passed as
 #'   the sole instrument to \code{\link{find_present_value}}
 #' @param instrument_price Target price for root finder
@@ -782,7 +778,7 @@ implied_jump_process_volatility = function(instrument_price, instrument,
 #'   is therefore entirely optional
 #' @param force_same_grid Price all options on the same grid, rather than having smaller timestep sizes for earlier maturities
 #' @param use_impvol Judge fit quality on implied vol distance rather than price distance
-#' @param ... Futher arguments to \code{\link{find_present_value}}
+#' @param ... Further arguments to \code{\link{find_present_value}}
 #' @inheritParams form_present_value_grid
 #' @inheritParams find_present_value
 #' @param S0  Current stock price

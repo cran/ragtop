@@ -1,4 +1,4 @@
-## ----global_options, include=FALSE---------------------------------------
+## ----global_options, include=FALSE--------------------------------------------
 library(ragtop)
 library(futile.logger)
 library(ggplot2)
@@ -13,16 +13,16 @@ knitr::opts_chunk$set(fig.width=6.5, fig.height=4, fig.path='Figs/',
                       echo=FALSE, warning=FALSE, message=FALSE, comment=FALSE)
 
 
-## ----show_TSLA_S0, comment="", echo=TRUE---------------------------------
+## ----show_TSLA_S0, comment="", echo=TRUE--------------------------------------
 TSLAMarket$S0
 
-## ----show_TSLA_rf, comment="", echo=TRUE---------------------------------
+## ----show_TSLA_rf, comment="", echo=TRUE--------------------------------------
 knitr::kable(TSLAMarket$risk_free_rates, digits=3, row.names = F)
 
-## ---- results='asis', comment=""-----------------------------------------
+## ---- results='asis', comment=""----------------------------------------------
 knitr::kable(TSLAMarket$options[c(200,300,400,500,600, 800),], digits=3, row.names = F)
 
-## ----blackscholes, comment=""--------------------------------------------
+## ----blackscholes, comment=""-------------------------------------------------
 blackscholes(TSLAMarket$options[500,'callput'], 
              TSLAMarket$S0, 
              TSLAMarket$options[500,'K'], 
@@ -30,7 +30,7 @@ blackscholes(TSLAMarket$options[500,'callput'],
              TSLAMarket$options[500,'time'], 
              0.50)
 
-## ----implied_volatility, echo=TRUE, comment=""---------------------------
+## ----implied_volatility, echo=TRUE, comment=""--------------------------------
 implied_volatility(option_price = TSLAMarket$options[400,'ask'], 
                    S0 = TSLAMarket$S0, 
                    callput = TSLAMarket$options[400,'callput'], 
@@ -38,7 +38,7 @@ implied_volatility(option_price = TSLAMarket$options[400,'ask'],
                    r = 0.005, 
                    time = TSLAMarket$options[400,'time'])
 
-## ----amer, echo=TRUE, comment=""-----------------------------------------
+## ----amer, echo=TRUE, comment=""----------------------------------------------
 american(
        callput = TSLAMarket$options[400,'callput'], 
        S0 = TSLAMarket$S0, 
@@ -46,7 +46,7 @@ american(
        const_short_rate = 0.005, 
        time = TSLAMarket$options[400,'time'])
 
-## ----american_implied_volatility, echo=TRUE, comment=""------------------
+## ----american_implied_volatility, echo=TRUE, comment=""-----------------------
 american_implied_volatility(option_price = TSLAMarket$options[400,'ask'], 
      S0 = TSLAMarket$S0, 
      callput = TSLAMarket$options[400,'callput'], 
@@ -54,19 +54,19 @@ american_implied_volatility(option_price = TSLAMarket$options[400,'ask'],
      const_short_rate = 0.005, 
      time = TSLAMarket$options[400,'time'])
 
-## ----implied_volatility_def, comment="", echo=TRUE-----------------------
+## ----implied_volatility_def, comment="", echo=TRUE----------------------------
 implied_volatility(option_price = 17, 
                    S0 = 250, callput = CALL,  K=245,
                    r = 0.005, time = 2,
                    const_default_intensity = 0.03)
 
-## ----american_implied_volatility_def, comment="", echo=T-----------------
+## ----american_implied_volatility_def, comment="", echo=T----------------------
 american_implied_volatility(option_price = 19.1, 
      S0 = 223.17, callput = PUT, K=220, 
      const_short_rate = 0.005, time = 1.45,
      const_default_intensity = 0.0200)
 
-## ----ts_fcns, echo=TRUE, comment=""--------------------------------------
+## ----ts_fcns, echo=TRUE, comment=""-------------------------------------------
 ## Dividends
 divs = data.frame(time=seq(from=0.11, to=2, by=0.25),
                   fixed=seq(1.5, 1, length.out=8),
@@ -88,7 +88,7 @@ vc = variance_cumulation_from_vols(
               volatility=c(0.2,0.5,1.2)))
 paste0("Cumulated variance to 18 months is ", vc(1.5, 0))
 
-## ----blackscholes_ts, comment="", echo=TRUE------------------------------
+## ----blackscholes_ts, comment="", echo=TRUE-----------------------------------
 black_scholes_on_term_structures(
    callput=TSLAMarket$options[500,'callput'], 
    S0=TSLAMarket$S0, 
@@ -99,7 +99,7 @@ black_scholes_on_term_structures(
    variance_cumulation_fcn=vc,
    dividends=divs)
 
-## ----amer_ts, echo=TRUE, comment=""--------------------------------------
+## ----amer_ts, echo=TRUE, comment=""-------------------------------------------
 american(
     callput = TSLAMarket$options[400,'callput'], 
     S0 = TSLAMarket$S0, 
@@ -110,7 +110,7 @@ american(
     variance_cumulation_fcn=vc,
     dividends=divs)
 
-## ----implied_bs_volatility_def_ts, comment="", echo =T-------------------
+## ----implied_bs_volatility_def_ts, comment="", echo =T------------------------
 implied_volatility_with_term_struct(
    option_price = TSLAMarket$options[400,'ask'], 
    S0 = TSLAMarket$S0, 
@@ -121,7 +121,7 @@ implied_volatility_with_term_struct(
    survival_probability_fcn=surv_prob_fcn,
    dividends=divs)
 
-## ----amer_ts_iv, echo=TRUE, comment=""-----------------------------------
+## ----amer_ts_iv, echo=TRUE, comment=""----------------------------------------
 american_implied_volatility(
     option_price=TSLAMarket$options[400,'ask'], 
     callput = TSLAMarket$options[400,'callput'], 
@@ -132,12 +132,12 @@ american_implied_volatility(
     survival_probability_fcn=surv_prob_fcn,
     dividends=divs)
 
-## ----def_int_fav, echo=TRUE, comment=""----------------------------------
+## ----def_int_fav, echo=TRUE, comment=""---------------------------------------
   def_ints_fcn = function(t, S, ...){
     0.09+0.01*(S0/S)^1.5
     }
 
-## ----impl_curve_elems, echo=TRUE, comment=""-----------------------------
+## ----impl_curve_elems, echo=TRUE, comment=""----------------------------------
   options_df = TSLAMarket$options
   S0 = TSLAMarket$S0
   make_option = function(x) {
@@ -153,7 +153,7 @@ american_implied_volatility(
   atm_put_prices = options_df$mid[atm_put_ix]
   knitr::kable(options_df[atm_put_ix,], digits=3, row.names = F)
 
-## ----varfit, echo=TRUE, comment=""---------------------------------------
+## ----varfit, echo=TRUE, comment=""--------------------------------------------
 vcm = fit_variance_cumulation(S0, eq_options=atm_puts,
        mid_prices=atm_put_prices,
        spreads=0.01*atm_put_prices,
@@ -163,7 +163,7 @@ vcm = fit_variance_cumulation(S0, eq_options=atm_puts,
        num_time_steps=100)
 vcm$volatilities
 
-## ----fit_elems, echo=FALSE, comment=""-----------------------------------
+## ----fit_elems, echo=FALSE, comment=""----------------------------------------
   h0 = 0.05
   fit_target_ix = ((options_df$K==210 | options_df$K==220 ) & (options_df$callput==PUT)
                 & (options_df$time>6/12))
@@ -172,7 +172,7 @@ vcm$volatilities
   fit_target_prices = options_df$mid[atm_put_ix]
   knitr::kable(options_df[fit_target_ix,], digits=3, row.names = F)
 
-## ----fit_pen, echo=TRUE, comment=""--------------------------------------
+## ----fit_pen, echo=TRUE, comment=""-------------------------------------------
   h0 = 0.05
   fit_penalty = function(p, s) {
   def_intens_f = function(t,S,...) {h0 * (s + (1-s) * (S0/S)^p)}
@@ -196,7 +196,7 @@ vcm$volatilities
 }
 fit_penalty(1, 0.5)
 
-## ----define_cb, echo=TRUE, comment=""------------------------------------
+## ----define_cb, echo=TRUE, comment=""-----------------------------------------
 cb = ragtop::ConvertibleBond(
   maturity=2.87, conversion_ratio=2.7788, notional=1000,
   coupons=data.frame(payment_time=seq(2.8,0, by=-0.25),
@@ -209,7 +209,7 @@ s = 0.75
 h0 = 0.04
 p = 2.5
 
-## ----associated_f, echo=TRUE, comment=""---------------------------------
+## ----associated_f, echo=TRUE, comment=""--------------------------------------
 calibrated_intensity_f = function(t, S, ...){
   0.03+0.01*(S0/S)^1.5
 }
@@ -224,7 +224,7 @@ calib_varnce = fit_variance_cumulation(
               num_time_steps=100)
 calib_varnce$volatilities
 
-## ----price_cb, echo=TRUE, comment=""-------------------------------------
+## ----price_cb, echo=TRUE, comment=""------------------------------------------
 cb_value = form_present_value_grid(
   S0=S0, grid_center=S0,
   instruments=list(Convertible=cb),
@@ -233,7 +233,7 @@ cb_value = form_present_value_grid(
   discount_factor_fcn = disct_fcn,
   variance_cumulation_fcn=calib_varnce$cumulation_function)
 
-## ----grid_cb_delta, echo=TRUE, comment=""--------------------------------
+## ----grid_cb_delta, echo=TRUE, comment=""-------------------------------------
 cbprices = ragtop::form_present_value_grid(
   S0=S0, grid_center=S0,
   instruments=list(Convertible=cb),
@@ -251,7 +251,7 @@ present_value_interp = splinefun(
 delta = present_value_interp(S0, deriv=1)
 delta
 
-## ----grid_cb_plot, echo=TRUE, comment=""---------------------------------
+## ----grid_cb_plot, echo=TRUE, comment=""--------------------------------------
 present_value = present_value_interp(S0)
 cbplot = ( ggplot(cbgrid,
                   aes(x=Underlying,y=Convertible)) +
@@ -263,7 +263,7 @@ cbplot = ( ggplot(cbgrid,
 )
 cbplot
 
-## ----twitter_cb_via_BondValuation, echo=TRUE, comment=""-----------------
+## ----twitter_cb_via_BondValuation, echo=TRUE, comment=""----------------------
 twitter_bv = BondValuation::AnnivDates(
     Em=as.Date('2018-06-11'),    # Issue date
     Mat=as.Date('2024-06-15'), 
