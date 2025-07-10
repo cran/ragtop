@@ -19,7 +19,7 @@ TSLAMarket$S0
 ## ----show_TSLA_rf, comment="", echo=TRUE--------------------------------------
 knitr::kable(TSLAMarket$risk_free_rates, digits=3, row.names = F)
 
-## ---- results='asis', comment=""----------------------------------------------
+## ----results='asis', comment=""-----------------------------------------------
 knitr::kable(TSLAMarket$options[c(200,300,400,500,600, 800),], digits=3, row.names = F)
 
 ## ----blackscholes, comment=""-------------------------------------------------

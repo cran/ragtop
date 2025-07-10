@@ -1,10 +1,12 @@
 Package: ragtop
 Type: Package
 Title: Pricing Equity Derivatives with Extensions of Black-Scholes
-Version: 1.1.1
-Date: 2020-02-29
-Author: Brian K. Boonstra
-Maintainer: Brian K. Boonstra <ragtop@boonstra.org>
+Version: 1.2.0
+Date: 2025-07-09
+Authors@R: person(given = c("Brian", "K."),
+                   family = "Boonstra",
+                   role = c("aut", "cre"),
+                   email = "ragtop@boonstra.org")
 Description: Algorithms to price American and European
     equity options, convertible bonds and a
     variety of other financial derivatives. It uses an
@@ -16,16 +18,19 @@ Description: Algorithms to price American and European
     use ideas and techniques from Andersen and
     Buffum (2002) <doi:10.2139/ssrn.355308> and
     Linetsky (2006) <doi:10.1111/j.1467-9965.2006.00271.x>.
-Depends: limSolve (>= 1.5.5.1), futile.logger (>= 1.4.1), R (>= 2.10),
+Depends: limSolve (>= 2.0.1), futile.logger (>= 1.4.1), R (>= 3.5),
         methods (>= 3.2.2)
 Suggests: testthat, roxygen2, knitr, rmarkdown, reshape2, stringr,
-        ggplot2, MASS, RColorBrewer, BondValuation, R.cache, Quandl
+        ggplot2, MASS, RColorBrewer, BondValuation, R.cache, lubridate,
+        treasury
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: TRUE
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2020-03-03 03:48:55 UTC; brian
+Packaged: 2025-07-10 20:18:25 UTC; brian
+Author: Brian K. Boonstra [aut, cre]
+Maintainer: Brian K. Boonstra <ragtop@boonstra.org>
 Repository: CRAN
-Date/Publication: 2020-03-03 09:00:02 UTC
+Date/Publication: 2025-07-10 21:40:02 UTC

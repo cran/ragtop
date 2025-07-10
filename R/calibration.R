@@ -792,7 +792,7 @@ implied_jump_process_volatility = function(instrument_price, instrument,
 #' @param dividends A \code{data.frame} with columns \code{time}, \code{fixed},
 #'   and \code{proportional}.  Dividend size at the given \code{time} is
 #' @return A list with two elements, \code{volatilities} and \code{cumulation_function}.  The \code{cumulation_function} will
-#'   be a 2-parameter function giving cumulated variances, as created by code{\link{variance_cumulation_from_vols}}
+#'   be a 2-parameter function giving cumulated variances, as created by \code{\link{variance_cumulation_from_vols}}
 #' @keywords calibration
 #' @keywords Black-Scholes
 #' @concept implied volatility
