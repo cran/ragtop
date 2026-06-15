@@ -31,8 +31,6 @@
 ## syntax is close or identical so a change to R6 should be
 ## easy.
 
-## Logging
-library(futile.logger)
 
 # TODO: Allow initialization of some instruments from QuantLib classes
 # TODO: Handle daycount conventions and dates, perhaps using Quantlib
@@ -105,7 +103,7 @@ EuropeanOption = setRefClass(
     recovery_fcn = function(v,S,t,discount_factor_fctn=discount_factor_fcn,...) {
       "Return 0 for calls and discounted future payout for puts."
       recovery = 0
-      if (-1==callput) {
+      if (callput == -1) {
         df = discount_factor_fctn(maturity, t)
         recovery = strike * df
         if (recovery>2*max(S)) {
@@ -138,7 +136,7 @@ AmericanOption = setRefClass(
     recovery_fcn = function(v,S,t,...) {
       "Return 0 for calls and discounted future payout for puts."
       recovery = 0
-      if (-1==callput) {
+      if (callput == -1) {
         recovery = strike
       }
       recovery
@@ -271,7 +269,7 @@ CouponBond = setRefClass(
       }
       new_cash = df*(last_computed_cash - cashflows)
       flog.info("Updating %s last_computed_cash (was: %s) discounted by %s to %s and subtracted cashflows %s discounted to %s to get %s.",
-                name, last_computed_cash, df, df*new_cash,
+                name, last_computed_cash, df, df*last_computed_cash,
                 cashflows, df*cashflows, new_cash, name="ragtop.instruments.cashflows.bond")
       last_computed_cash <<- new_cash
       cashflows

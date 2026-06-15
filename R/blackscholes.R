@@ -16,17 +16,15 @@
 ## You should have received a copy of the GNU General Public License
 ## along with ragtop.  If not, see <http://www.gnu.org/licenses/>.
 
-library(futile.logger)
-
 
 #' Constant CALL for defining option contracts
 #'
-#' @export CALL
+#' @export
 CALL = 1
 
 #' Constant PUT for defining option contracts
 #'
-#' @export PUT
+#' @export
 PUT = -1
 
 #' Vectorized Black-Scholes pricing of european-exercise options
@@ -39,7 +37,7 @@ PUT = -1
 #'  probability.
 #'
 #' All inputs must either be scalars or have the same nonscalar shape.
-#' @param callput 1 for calls, -1 for puts
+#' @param callput \code{1} for calls, \code{-1} for puts
 #' @param S0 initial underlying price
 #' @param K strike
 #' @param r risk-free interest rate
@@ -62,7 +60,7 @@ PUT = -1
 #' @examples
 #' blackscholes(callput=-1, S0=100, K=90, r=0.03, time=1, # -1 is a PUT
 #'              vola=0.5, default_intensity=0.07)
-#' @export blackscholes
+#' @export
 blackscholes = function(callput, S0, K, r, time, vola,
                         default_intensity=0, divrate=0, borrow_cost=0,
                         dividends=NULL)
@@ -77,7 +75,7 @@ blackscholes = function(callput, S0, K, r, time, vola,
       # Discount without consideration for default intensity.  For options
       #  the absence of dividends in case of default is handled by terminal
       #  likelihood.
-      # Subtracting present value properly adjusts the terminal distibution
+      # Subtracting present value properly adjusts the terminal distribution
       #  in case of proportional dividends.  For fixed dividends, only a
       #  grid scheme can properly handle it.  We just pretend they are
       #  proportional here.
@@ -103,7 +101,7 @@ blackscholes = function(callput, S0, K, r, time, vola,
   delta = exp(-q*time)*callput * stats::pnorm(callput*d1)
   vega = S0*exp(-q*time) * stats::dnorm(d1)*sqrt(time)*abs(callput)  # Include abs(callput) to properly vectorize
   surv_prob = exp(-default_intensity*time)
-  default_value = max(0, -callput*K*exp(-r*time))
+  default_value = pmax(0, -callput*K*exp(-r*time))
   surv_delta = 0
   surv_vega = 0
   ans = list(Price=surv_prob*v + (1-surv_prob)*default_value,
@@ -153,8 +151,7 @@ blackscholes = function(callput, S0, K, r, time, vola,
 #'                                  variance_cumulation_fcn = function(T, t) {
 #'                                    0.45 ^ 2 * (T - t)
 #'                                  })
-#' @import futile.logger
-#' @export black_scholes_on_term_structures
+#' @export
 black_scholes_on_term_structures = function(callput, S0, K, time,
            const_volatility=0.5, const_short_rate=0, const_default_intensity=0,
            discount_factor_fcn = function(T, t, ...){exp(-const_short_rate*(T-t))},

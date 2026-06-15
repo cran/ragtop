@@ -16,8 +16,6 @@
 ## You should have received a copy of the GNU General Public License
 ## along with ragtop.  If not, see <http://www.gnu.org/licenses/>.
 
-library(futile.logger)
-
 #' Shift a set of grid values for dividends paid, using spline interpolation
 #'
 #' @param grid_values_before_shift Values on grid before accounting for
@@ -41,7 +39,7 @@ shift_for_dividends = function(grid_values_before_shift, stock_prices, div_sum)
     x = stock_prices, y = grid_values_before_shift,
     xout = shifted_prices,
     method = "natural"
-  ) # natural method allows linear extrapolation
+  ) # natural method allows linear extrapolation, which is Neumann boundary conditions
   new_grid_values = spl$y
   new_grid_values
 }
@@ -60,7 +58,7 @@ shift_for_dividends = function(grid_values_before_shift, stock_prices, div_sum)
 #' @inheritParams blackscholes
 #' @family Dividends
 #' @return Sum of dividends, at each grid node
-#' @export time_adj_dividends
+#' @export
 time_adj_dividends = function(relevant_divs, t_final, r, h, S, S0)
 {
   ## Returns a vector with one dividend sum per entry in S
@@ -99,9 +97,8 @@ time_adj_dividends = function(relevant_divs, t_final, r, h, S, S0)
 #'   and \code{proportional}.  Dividend size at the given \code{time} is
 #'   then expected to be equal to \code{fixed + proportional * S / S0}
 #' @return An object like \code{grid_values} with entries modified according to the dividends
-#' @import futile.logger
 #' @family Dividends
-#' @export adjust_for_dividends
+#' @export
 adjust_for_dividends = function(grid_values, t, dt, r, h, S, S0, dividends)
 {
   ## Grid values are expected to come from f[k,m-1,]
@@ -163,8 +160,10 @@ adjust_for_dividends = function(grid_values, t, dt, r, h, S, S0, dividends)
 value_from_prior_coupons = function(t, coupons_df, discount_factor_fcn, model_t=0)
 {
   coups = coupons_df[(coupons_df$payment_time<=t) & (coupons_df$payment_time>model_t),]
-  disc_factors = discount_factor_fcn(coups$payment_time, t)
-  pvs = coups$payment_size / disc_factors
+  # Avoid underflow by getting inv disc facts and multiplying, shifting underflow
+  # management to `discount_factor_fcn`
+  inv_disc_factors = discount_factor_fcn(coups$payment_time, t)
+  pvs = coups$payment_size * inv_disc_factors
   sum(pvs)
 }
 
@@ -181,13 +180,13 @@ value_from_prior_coupons = function(t, coupons_df, discount_factor_fcn, model_t=
 #'   columns \code{payment_time} and \code{payment_size}.
 #' @family Bond Coupons
 #' @family Bond Coupon Acceleration
-#' @export accelerated_coupon_value
+#' @export
 accelerated_coupon_value = function(t, coupons_df, discount_factor_fcn,
                                     acceleration_t=Inf)
 {
   coups = coupons_df[(coupons_df$payment_time<=acceleration_t) & (coupons_df$payment_time>t),]
-  disc_factors = discount_factor_fcn(t, coups$payment_time)
-  pvs = coups$payment_size / disc_factors
+  disc_factors = discount_factor_fcn(coups$payment_time, t)
+  pvs = coups$payment_size * disc_factors
   sum(pvs)
 }
 
@@ -207,7 +206,7 @@ accelerated_coupon_value = function(t, coupons_df, discount_factor_fcn,
 #' @return A scalar equal to the present value
 #' @family Bond Coupons
 #' @family Bond Coupon Acceleration
-#' @export coupon_value_at_exercise
+#' @export
 coupon_value_at_exercise = function(t, coupons_df, discount_factor_fcn, model_t=0,
                                     accelerate_future_coupons=FALSE,
                                     acceleration_discount_factor_fcn=discount_factor_fcn,

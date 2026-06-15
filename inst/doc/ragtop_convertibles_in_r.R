@@ -17,10 +17,10 @@ knitr::opts_chunk$set(fig.width=6.5, fig.height=4, fig.path='Figs/',
 TSLAMarket$S0
 
 ## ----show_TSLA_rf, comment="", echo=TRUE--------------------------------------
-knitr::kable(TSLAMarket$risk_free_rates, digits=3, row.names = F)
+knitr::kable(TSLAMarket$risk_free_rates, digits=3, row.names = FALSE)
 
 ## ----results='asis', comment=""-----------------------------------------------
-knitr::kable(TSLAMarket$options[c(200,300,400,500,600, 800),], digits=3, row.names = F)
+knitr::kable(TSLAMarket$options[c(200,300,400,500,600, 800),], digits=3, row.names = FALSE)
 
 ## ----blackscholes, comment=""-------------------------------------------------
 blackscholes(TSLAMarket$options[500,'callput'], 
@@ -151,7 +151,7 @@ american_implied_volatility(
   atm_puts = apply(options_df[atm_put_ix,], 1, make_option)
 
   atm_put_prices = options_df$mid[atm_put_ix]
-  knitr::kable(options_df[atm_put_ix,], digits=3, row.names = F)
+  knitr::kable(options_df[atm_put_ix,], digits=3, row.names = FALSE)
 
 ## ----varfit, echo=TRUE, comment=""--------------------------------------------
 vcm = fit_variance_cumulation(S0, eq_options=atm_puts,
@@ -170,7 +170,7 @@ vcm$volatilities
   fit_targets = apply(options_df[atm_put_ix,], 1, make_option)
 
   fit_target_prices = options_df$mid[atm_put_ix]
-  knitr::kable(options_df[fit_target_ix,], digits=3, row.names = F)
+  knitr::kable(options_df[fit_target_ix,], digits=3, row.names = FALSE)
 
 ## ----fit_pen, echo=TRUE, comment=""-------------------------------------------
   h0 = 0.05
@@ -264,40 +264,48 @@ cbplot = ( ggplot(cbgrid,
 cbplot
 
 ## ----twitter_cb_via_BondValuation, echo=TRUE, comment=""----------------------
-twitter_bv = BondValuation::AnnivDates(
-    Em=as.Date('2018-06-11'),    # Issue date
-    Mat=as.Date('2024-06-15'), 
-    CpY=2, 
-    FIPD=as.Date('2018-12-15'),   # First coupon
-    FIAD=as.Date('2018-06-15'),   # Beginning of first coupon accrual
-    RV=1000,   # Notional
-    Coup=0.25, 
-    DCC=which(BondValuation::List.DCC$DCC.Name=='30/360'),  # 30/360 daycount convention
-    EOM=0
+twitter_bv = if (requireNamespace("BondValuation", quietly = TRUE)) {
+  tryCatch(
+      BondValuation::AnnivDates(
+        Em=as.Date('2018-06-11'),    # Issue date
+        Mat=as.Date('2024-06-15'), 
+        CpY=2, 
+        FIPD=as.Date('2018-12-15'),   # First coupon
+        FIAD=as.Date('2018-06-15'),   # Beginning of first coupon accrual
+        RV=1000,   # Notional
+        Coup=0.25, 
+        DCC=which(BondValuation::List.DCC$DCC.Name=='30/360'),  # 30/360 daycount convention
+        EOM=0
+      )
   )
+} else NULL
 
-twitter_specs = ragtop::detail_from_AnnivDates(
-    twitter_bv, 
-    as_of=as.Date('2018-02-15')
-  )
+if (!is.null(twitter_bv)) {
+  twitter_specs = ragtop::detail_from_AnnivDates(
+      twitter_bv, 
+      as_of=as.Date('2018-02-15')
+    )
 
-twtr_cb = ragtop::ConvertibleBond(
-    maturity=twitter_specs$maturity, 
-    conversion_ratio=17.5001, 
-    notional=twitter_specs$notional,
-    coupons=twitter_specs$coupons,
-    discount_factor_fcn = disct_fcn,
-    name='TwitterConvertWithGreenshoe'
-  )
+  twtr_cb = ragtop::ConvertibleBond(
+      maturity=twitter_specs$maturity, 
+      conversion_ratio=17.5001, 
+      notional=twitter_specs$notional,
+      coupons=twitter_specs$coupons,
+      discount_factor_fcn = disct_fcn,
+      name='TwitterConvertWithGreenshoe'
+    )
 
-pvs = ragtop::find_present_value(
-    S0=33.06,
-    num_time_steps=200,
-    instruments=list(TWTR=twtr_cb),
-    const_volatility=0.47,
-    const_default_intensity=0.01,
-    discount_factor_fcn=disct_fcn,
-  )
+  pvs = ragtop::find_present_value(
+      S0=33.06,
+      num_time_steps=200,
+      instruments=list(TWTR=twtr_cb),
+      const_volatility=0.47,
+      const_default_intensity=0.01,
+      discount_factor_fcn=disct_fcn,
+    )
 
-paste("Twitter bond value is", pvs$TWTR)
+  paste("Twitter bond value is", pvs$TWTR)
+} else {
+  "BondValuation::AnnivDates is unavailable on this platform; skipping this example."
+}
 

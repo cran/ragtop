@@ -15,7 +15,6 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with ragtop.  If not, see <http://www.gnu.org/licenses/>.
-library(futile.logger)
 
 #' Form instrument objects for vanilla options
 #'
@@ -24,7 +23,7 @@ library(futile.logger)
 #' first half consists of AmericanOption objects and
 #' second half consists of EuropeanOption objects
 #' having the same exercise specification
-#' @param callput 1 for calls, -1 for puts
+#' @param callput \code{1} for calls, \code{-1} for puts
 #' @param K strike
 #' @param time Time from \code{0} until expiration
 #' @family American Exercise Equity Options
@@ -63,7 +62,7 @@ control_variate_pairs = function(callput, K, time)
 #'
 #' @inheritParams form_present_value_grid
 #' @inheritParams construct_implicit_grid_structure
-#' @param callput 1 for calls, -1 for puts (may be a vector of the same)
+#' @param callput \code{1} for calls, \code{-1} for puts (may be a vector of the same)
 #' @param S0 initial underlying price
 #' @param K strike (may be a vector)
 #' @param time Time from \code{0} until expiration (may be a vector)
@@ -89,8 +88,7 @@ control_variate_pairs = function(callput, K, time)
 #'          variance_cumulation_fcn = function(T, t) {  # Term structure of vola
 #'              0.45 ^ 2 * (T - t) + 0.15^2 * max(0, T-0.25)
 #'          })
-#' @import futile.logger
-#' @export american
+#' @export
 american = function(callput, S0, K, time,
                     const_short_rate=0, const_default_intensity=0,
                     discount_factor_fcn = function(T, t, ...){exp(-const_short_rate*(T-t))},

@@ -15,7 +15,6 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with ragtop.  If not, see <http://www.gnu.org/licenses/>.
-library(futile.logger)
 
 #' Create a variance cumulation function from a volatility term structure
 #'
@@ -35,7 +34,7 @@ library(futile.logger)
 #'   volatility=c(0.2,0.5,1.2)))
 #' vc(1.5, 0)
 #'
-#' @export variance_cumulation_from_vols
+#' @export
 variance_cumulation_from_vols = function(vols_df)
 {
   N = nrow(vols_df)
@@ -53,30 +52,25 @@ variance_cumulation_from_vols = function(vols_df)
   last_vol = vols_df$volatility[[N]]
   vols_df$fwd_vols = sqrt(fwd_variances/time_diffs)
   cumul_var_0 = function(x) {
-    if (x==0) {
-      cmvar = 0
-    } else if (x>=max_t) {
-      cmvar = cumulated_variances[[N+1]] + vols_df$fwd_vols[[N]]^2 * (x-max_t)
-      flog.debug("Found %s was beyond max_t %s, N=%s, using time diff %s from last anchor time max_t=%s applied to fwd vol %s and prev var %s",
-                 x, max_t, N, (x-max_t), max_t, vols_df$fwd_vols[[N]], cumulated_variances[[N]],
-                 name='ragtop.term_structures.variance_cumulation_from_vols')
-    } else {
-      k = findInterval(x, augmented_t)  # Will not be larger than N
-      dt = x - augmented_t[[k]]
-      if (dt<0) {
-        stop("Negative time interval after call to findInterval() in variance_cumulation_from_vols()")
-      }
-      cmvar = cumulated_variances[[k]] + vols_df$fwd_vols[[k]]^2 * dt
-      flog.debug("Found k=%s, using time diff %s from prev anchor time %s applied to fwd vol %s and prev var %s",
-                 k, dt, augmented_t[[k]], vols_df$fwd_vols[[k]], cumulated_variances[[k]],
-                 name='ragtop.term_structures.variance_cumulation_from_vols')
+    if (any(x < 0)) {
+      stop("Negative time passed to cumulative variance function in variance_cumulation_from_vols()")
     }
+    # findInterval lands each x in [augmented_t[k], augmented_t[k+1]); for
+    #  nonnegative x it is in 1..N+1.  The x==0 case (k=1) and the x>=max_t
+    #  case (k=N+1) both fall out of the one formula once we clamp the forward
+    #  vol index to N, since vols_df$fwd_vols has only N entries.
+    k = findInterval(x, augmented_t)
+    fwd_ix = pmin(k, N)
+    cmvar = cumulated_variances[k] + vols_df$fwd_vols[fwd_ix]^2 * (x - augmented_t[k])
+    flog.debug("Cumulative variance at times %s (anchor indexes %s) is %s",
+               toString(x), toString(k), toString(cmvar),
+               name='ragtop.term_structures.variance_cumulation_from_vols')
     cmvar
   }
   cumul_var = function(T,t=0) {
     cv = cumul_var_0(T) - cumul_var_0(t)
-    if ((T>t) && (cv<=0)) {
-      stop("Nonsensical cumulative variance ", cv, " from t=", t, " to T=", T)
+    if (any((T>t) & (cv<=0))) {
+      stop("Nonsensical cumulative variance ", toString(cv), " from t=", toString(t), " to T=", toString(T))
     }
     cv
   }
@@ -96,7 +90,7 @@ variance_cumulation_from_vols = function(vols_df)
 #'   data.frame(time=c(1, 5, 10, 15),
 #'              rate=c(0.01, 0.02, 0.03, 0.05)))
 #' print(disct_fcn(1, 0.5))
-#' @export spot_to_df_fcn
+#' @export
 spot_to_df_fcn = function(yield_curve) {
   yield_curve$dfs = exp(-yield_curve$time*yield_curve$rate)
   later = yield_curve$dfs[2:length(yield_curve$dfs)]
@@ -105,14 +99,14 @@ spot_to_df_fcn = function(yield_curve) {
   yield_curve$fwd_rate = fwd_rates[[length(fwd_rates)]]
   yield_curve$fwd_rate[1:(length(yield_curve$fwd_rate)-1)] = fwd_rates
   ycdf = function(x) {
-    loc_df = NA
     n = findInterval(x, yield_curve$time)
-    if (n>0) {
-      dt = (x-yield_curve$time[[n]])
-      loc_df = yield_curve$dfs[[n]] * exp(-yield_curve$fwd_rate[[n]]*dt)
-    } else {
-      loc_df = exp(-yield_curve$rate[[1]]*x)
-    }
+    loc_df = numeric(length(x))
+    # Times at or beyond the first curve knot (n>0) use the piecewise-constant
+    #  forward rate from the bracketing knot; earlier times use the first spot rate.
+    on_curve = n > 0
+    loc_df[on_curve] = yield_curve$dfs[n[on_curve]] *
+      exp(-yield_curve$fwd_rate[n[on_curve]] * (x[on_curve] - yield_curve$time[n[on_curve]]))
+    loc_df[!on_curve] = exp(-yield_curve$rate[[1]] * x[!on_curve])
     loc_df
   }
   treasury_df_fcn = function(T,t=0,...) {ycdf(T)/ycdf(t)}
@@ -123,9 +117,9 @@ spot_to_df_fcn = function(yield_curve) {
 #'
 #' @param on_date Date for which to query for the curve, year-month-day format
 #' @return A function taking two time arguments, which returns the discount factor from the second to the first
-#' @export treasury_df_raw
+#' @export
 treasury_df_raw = function(on_date) {
-  if (is.element('treasury', utils::installed.packages()[,1])) {
+  if (requireNamespace('treasury', quietly = TRUE)) {
     on_date = lubridate::ymd(on_date)
     yield_curve_df = treasury::tr_yield_curve(date=format(on_date, "%Y%m"))
     maturities_used = c("1 month", "3 month", "6 month", "1 year", "2 year", "3 year", "5 year", "7 year", "10 year", "20 year", "30 year")
@@ -150,15 +144,15 @@ treasury_df_raw = function(on_date) {
 #' @param ... Arguments passed to \code{\link{treasury_df_raw}}
 #' @param envir Environment passed to \code{\link{treasury_df_raw}}
 #' @return A function taking two time arguments, which returns the discount factor from the second to the first (see \code{spot_to_df_fcn})
-#' @export treasury_df
+#' @export
 treasury_df = function(...,envir=parent.frame()) {
   treasury_df_raw(...)
 }
-if (is.element('R.cache', utils::installed.packages()[,1])) {
+if (requireNamespace('R.cache', quietly = TRUE)) {
   treasury_df = R.cache::addMemoization(treasury_df_raw)
 }
 
-#' Convert output of BondValuation::AnnivDates to inputd for Bond
+#' Convert output of BondValuation::AnnivDates to inputs for Bond
 #'
 #' The BondValuation package provides day count convention treatments superior
 #'  to quantmod or any other R package known (as of May 2019).  This function
@@ -174,7 +168,7 @@ if (is.element('R.cache', utils::installed.packages()[,1])) {
 #'             maturity - maturity
 #'             notional - notional amount
 #'             coupons - `data.frame` with `payment_time`, `payment_size`
-#' @export detail_from_AnnivDates
+#' @export
 detail_from_AnnivDates = function(anvdates, as_of=Sys.time(), normalization_factor=365.25) {
   as_of = as.POSIXct(as_of)
   payment_time = as.numeric(as.POSIXct(anvdates$PaySched$CoupDates) - as_of)/normalization_factor

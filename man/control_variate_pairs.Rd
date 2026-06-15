@@ -7,7 +7,7 @@
 control_variate_pairs(callput, K, time)
 }
 \arguments{
-\item{callput}{1 for calls, -1 for puts}
+\item{callput}{\code{1} for calls, \code{-1} for puts}
 
 \item{K}{strike}
 
@@ -21,8 +21,8 @@ second half consists of EuropeanOption objects
 having the same exercise specification
 }
 \seealso{
-Other American Exercise Equity Options: 
-\code{\link{american}()},
-\code{\link{american_implied_volatility}()}
+Other American Exercise Equity Options:
+\code{\link[=american]{american()}},
+\code{\link[=american_implied_volatility]{american_implied_volatility()}}
 }
 \concept{American Exercise Equity Options}

@@ -42,9 +42,9 @@ for each space grid node}
 \item{tridiag_matrix_entries}{Diagonal, superdiagonal and subdiagonal
 of tridiagonal matrix from the numerical integrator}
 
-\item{instrument}{If not NULL/NA,  must have a \code{recovery_fcn} and
+\item{instrument}{If not \code{NULL}/\code{NA},  must have a \code{recovery_fcn} and
 an \code{optionality_fcn} though those properties are
-themselves allowed to be NA.}
+themselves allowed to be \code{NA}.}
 
 \item{dividends}{A \code{data.frame} with columns \code{time}, \code{fixed},
 and \code{proportional}.  Dividend size at the given \code{time} is
@@ -59,13 +59,13 @@ Grid values for the instrument after taking the implicit timestep
 Take one timestep of an implicit solver for a given instrument
 }
 \seealso{
-Other Implicit Grid Solver: 
-\code{\link{construct_implicit_grid_structure}()},
-\code{\link{find_present_value}()},
-\code{\link{form_present_value_grid}()},
-\code{\link{infer_conforming_time_grid}()},
-\code{\link{integrate_pde}()},
-\code{\link{iterate_grid_from_timestep}()},
-\code{\link{timestep_instruments}()}
+Other Implicit Grid Solver:
+\code{\link[=construct_implicit_grid_structure]{construct_implicit_grid_structure()}},
+\code{\link[=find_present_value]{find_present_value()}},
+\code{\link[=form_present_value_grid]{form_present_value_grid()}},
+\code{\link[=infer_conforming_time_grid]{infer_conforming_time_grid()}},
+\code{\link[=integrate_pde]{integrate_pde()}},
+\code{\link[=iterate_grid_from_timestep]{iterate_grid_from_timestep()}},
+\code{\link[=timestep_instruments]{timestep_instruments()}}
 }
 \concept{Implicit Grid Solver}

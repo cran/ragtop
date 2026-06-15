@@ -15,8 +15,6 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with ragtop.  If not, see <http://www.gnu.org/licenses/>.
-library(stats)
-library(futile.logger)
 
 #' Implied volatility of european-exercise option under Black-Scholes or a jump-process extension
 #'
@@ -27,7 +25,7 @@ library(futile.logger)
 #'  \code{const_default_intensity} set to zero (the default).
 #'
 #' @param option_price Present option value
-#' @param callput 1 for calls, -1 for puts
+#' @param callput \code{1} for calls, \code{-1} for puts
 #' @param S0 initial underlying price
 #' @param K strike
 #' @param r risk-free interest rate
@@ -54,8 +52,7 @@ library(futile.logger)
 #' @family Implied Volatilities
 #' @family Equity Independent Default Intensity
 #' @family European Options
-#' @import futile.logger
-#' @export implied_volatility
+#' @export
 implied_volatility = function(option_price, callput, S0, K, r, time,
                               const_default_intensity=0, divrate=0, borrow_cost=0,
                               dividends=NULL,
@@ -76,7 +73,7 @@ implied_volatility = function(option_price, callput, S0, K, r, time,
     flog.warn("The provided option price %s is so low that no positive volatility can explain it.  Minimum values would be %s",
               option_price, min_value,
               name='ragtop.calibration.implied_volatility.lowprice')
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Option price price %s exceeds the minimum price %s so a solution exists",
                option_price, min_value,
@@ -86,7 +83,7 @@ implied_volatility = function(option_price, callput, S0, K, r, time,
     flog.warn("The provided option price %s is so high that it exceeds the maximum volatility specified %s, at which the price is %s",
               option_price, max_vola, max_value,
               name='ragtop.calibration.implied_volatility.highprice')
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Option price price %s less than the maximum price %s so a solution exists",
                option_price, max_value,
@@ -137,7 +134,7 @@ implied_volatility = function(option_price, callput, S0, K, r, time,
 #'   a given option price.
 #'
 #' @param option_price Present option values (may be a vector)
-#' @param callput 1 for calls, -1 for puts (may be a vector)
+#' @param callput \code{1} for calls, \code{-1} for puts (may be a vector)
 #' @param S0 initial underlying price (may be a vector)
 #' @param K strike (may be a vector)
 #' @param r risk-free interest rate (may be a vector)
@@ -154,8 +151,7 @@ implied_volatility = function(option_price, callput, S0, K, r, time,
 #' @family Implied Volatilities
 #' @family European Options
 #' @family Equity Independent Default Intensity
-#' @import futile.logger
-#' @export implied_volatilities
+#' @export
 implied_volatilities = Vectorize(implied_volatility)
 #
 #' Find jump process volatility with a given default risk from a straight Black-Scholes volatility
@@ -183,7 +179,7 @@ implied_volatilities = Vectorize(implied_volatility)
 #' @return A scalar volatility
 #' @family Implied Volatilities
 #' @family Equity Independent Default Intensity
-#' @export equivalent_jump_vola_to_bs
+#' @export
 equivalent_jump_vola_to_bs = function(bs_vola, time,
                                           const_short_rate=0, const_default_intensity=0,
                                           discount_factor_fcn = function(T, t, ...){exp(-const_short_rate*(T-t))},
@@ -210,7 +206,7 @@ equivalent_jump_vola_to_bs = function(bs_vola, time,
                                                         dividend_rate=dividend_rate)$Price
   if (default_free_price<=min_value) {
     flog.warn("The provided survival probability is so low that it alone implies more than the provided default-free volatility")
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Default free price %s exceeds the minimum price %s so a solution exists",
                default_free_price, min_value, name='ragtop.calibration.equivalent_jump_vola_to_bs')
@@ -232,7 +228,7 @@ equivalent_jump_vola_to_bs = function(bs_vola, time,
     vola = vola + vola_adj
     if (vola<0) {
       flog.warn("The provided survival probability is so low that we cannot find the provided default-free volatility")
-      return(NA)
+      return(NA_real_)
     }
     bs_vals = black_scholes_on_term_structures(-1, 1, 1, time,
                                                const_volatility=vola,
@@ -274,7 +270,7 @@ equivalent_jump_vola_to_bs = function(bs_vola, time,
 #' @return A scalar defaultable volatility of an option
 #' @family Implied Volatilities
 #' @family Equity Independent Default Intensity
-#' @export equivalent_bs_vola_to_jump
+#' @export
 equivalent_bs_vola_to_jump = function(jump_process_vola, time,
                                             const_short_rate=0, const_default_intensity=0,
                                             discount_factor_fcn = function(T, t, ...){exp(-const_short_rate*(T-t))},
@@ -337,7 +333,7 @@ equivalent_bs_vola_to_jump = function(jump_process_vola, time,
 #'   algorithm with constant rates, \code{\link{implied_volatility_with_term_struct}} when
 #'   volatilities or survival probabilities also have a nontrivial term structure
 #' @param option_price Present option values (may be a vector)
-#' @param callput 1 for calls, -1 for puts (may be a vector)
+#' @param callput \code{1} for calls, \code{-1} for puts (may be a vector)
 #' @param S0 initial underlying prices (may be a vector)
 #' @param K strikes (may be a vector)
 #' @param discount_factor_fcn A function for computing present values to
@@ -362,8 +358,7 @@ equivalent_bs_vola_to_jump = function(jump_process_vola, time,
 #' @family Implied Volatilities
 #' @family European Options
 #' @family Equity Independent Default Intensity
-#' @import futile.logger
-#' @export implied_volatilities_with_rates_struct
+#' @export
 implied_volatilities_with_rates_struct = function(option_price, callput, S0, K, discount_factor_fcn, time,
                                                   const_default_intensity=0, divrate=0, borrow_cost=0,
                                                   dividends=NULL,
@@ -371,16 +366,12 @@ implied_volatilities_with_rates_struct = function(option_price, callput, S0, K, 
                                                   max.iter=100,
                                                   max_vola=4.00)
 {
-  get_r = function(tm) {
-    r = -log(discount_factor_fcn(tm,0))/tm
-    r
-  }
-  r = sapply(time, get_r)
+  r = vapply(time, function(tm) -log(discount_factor_fcn(tm, 0)) / tm, numeric(1))
   flog.info("Calculated %s short rates for getting impvols", length(r),
             name='ragtop.calibration.implied_volatilities_with_rates_struct')
   df = data.frame(option_price=option_price, callput=callput, S0=S0, K=K, r=r, time=time,
                   const_default_intensity=const_default_intensity,
-                  divrate=divrate, borrow_cost=divrate,
+                  divrate=divrate, borrow_cost=borrow_cost,
                   relative_tolerance=relative_tolerance,
                   max.iter=max.iter,
                   max_vola=max_vola)
@@ -413,7 +404,7 @@ implied_volatilities_with_rates_struct = function(option_price, callput, S0, K, 
 #'   pricing algorithm, \code{\link{implied_volatilities_with_rates_struct}} when
 #'   neither volatilities nor survival probabilities have a nontrivial term structure
 #' @param option_price Option price to match
-#' @param callput 1 for calls, -1 for puts
+#' @param callput \code{1} for calls, \code{-1} for puts
 #' @param S0 initial underlying price
 #' @param K strike
 #' @param time Time to expiration
@@ -441,8 +432,7 @@ implied_volatilities_with_rates_struct = function(option_price, callput, S0, K, 
 #' @family Implied Volatilities
 #' @family Equity Independent Default Intensity
 #' @family European Options
-#' @import futile.logger
-#' @export implied_volatility_with_term_struct
+#' @export
 implied_volatility_with_term_struct = function(option_price, callput, S0, K, time,
                                                ...,
                                                starting_volatility_estimate=0.5,
@@ -463,7 +453,7 @@ implied_volatility_with_term_struct = function(option_price, callput, S0, K, tim
     flog.warn("The provided option price %s is so low that no positive volatility can explain it.  Minimum values would be %s",
               option_price, min_value,
               name='ragtop.calibration.implied_volatility_with_term_struct')
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Option price price %s exceeds the minimum price %s so a solution exists",
                option_price, min_value,
@@ -473,7 +463,7 @@ implied_volatility_with_term_struct = function(option_price, callput, S0, K, tim
     flog.warn("The provided option price %s is so high that it exceeds the maximum volatility specified %s, at which the price is %s",
               option_price, max_vola, max_value,
               name='ragtop.calibration.implied_volatility_with_term_struct')
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Option price price %s less than the maximum price %s so a solution exists",
                option_price, max_value,
@@ -525,7 +515,7 @@ implied_volatility_with_term_struct = function(option_price, callput, S0, K, tim
 #'   underlying pricing algorithm
 #' @inheritParams form_present_value_grid
 #' @inheritParams american
-#' @param callput 1 for calls, -1 for puts
+#' @param callput \code{1} for calls, \code{-1} for puts
 #' @param K strike
 #' @param time Time from \code{0} until expiration
 #' @param option_price Option price to match
@@ -552,8 +542,7 @@ implied_volatility_with_term_struct = function(option_price, callput, S0, K, tim
 #' df25 = function(T,t){df250(T)/df250(t)} # Relative discount factors
 #' american_implied_volatility(25,-1,100,100,2.2,
 #'   discount_factor_fcn=df25, num_time_steps=5)
-#' @import futile.logger
-#' @export american_implied_volatility
+#' @export
 american_implied_volatility = function(option_price, callput, S0, K, time,
                                        const_default_intensity = 0,
                                        survival_probability_fcn = function(T, t, ...){exp(-const_default_intensity*(T-t))},
@@ -590,7 +579,7 @@ american_implied_volatility = function(option_price, callput, S0, K, time,
     flog.warn("The provided option price %s is so low that no positive volatility can explain it.  Minimum values would be %s",
               option_price, min_value,
               name='ragtop.calibration.american_implied_volatility')
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Option price price %s exceeds the minimum price %s so a solution exists",
                option_price, min_value,
@@ -600,7 +589,7 @@ american_implied_volatility = function(option_price, callput, S0, K, time,
     flog.warn("The provided option price %s is so high that it exceeds the maximum volatility specified %s, at which the price is %s",
               option_price, max_vola, max_value,
               name='ragtop.calibration.american_implied_volatility')
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Option price price %s less than the maximum price %s so a solution exists",
                option_price, max_value,
@@ -683,7 +672,7 @@ american_implied_volatility = function(option_price, callput, S0, K, time,
 #'     25, AmericanOption(maturity=1.1, strike=100, callput=-1),
 #'     S0=100, num_time_steps=50, relative_tolerance=1.e-3)
 #'
-#' @export implied_jump_process_volatility
+#' @export
 implied_jump_process_volatility = function(instrument_price, instrument,
                                          ...,
                                          starting_volatility_estimate=0.85,
@@ -704,7 +693,7 @@ implied_jump_process_volatility = function(instrument_price, instrument,
     flog.warn("The provided instrument price %s is so low that no positive volatility can explain it.  Minimum values would be %s",
               instrument_price, min_value,
               name='ragtop.calibration.implied_jump_process_volatility')
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Instrument price price %s exceeds the minimum price %s so a solution exists",
                instrument_price, min_value,
@@ -714,7 +703,7 @@ implied_jump_process_volatility = function(instrument_price, instrument,
     flog.warn("The provided option price %s is so high that it exceeds the maximum volatility specified %s, at which the price is %s",
               instrument_price, max_vola, max_value,
               name='ragtop.calibration.implied_jump_process_volatility')
-    return(NA)
+    return(NA_real_)
   } else {
     flog.debug("Option price price %s less than the maximum price %s so a solution exists",
                instrument_price, max_value,
@@ -799,7 +788,7 @@ implied_jump_process_volatility = function(instrument_price, instrument,
 #' @family Implied Volatilities
 #' @family Equity Dependent Default Intensity
 #'
-#' @export fit_variance_cumulation
+#' @export
 fit_variance_cumulation = function(S0, eq_options, mid_prices, spreads=NULL,
                                    initial_vols_guess=0.55 + 0*mid_prices,
                                    use_impvol=TRUE,
@@ -816,7 +805,7 @@ fit_variance_cumulation = function(S0, eq_options, mid_prices, spreads=NULL,
                                    ...)
 {
   N = length(eq_options)
-  if (N != length(mid_prices) || (0==N)) {
+  if (N != length(mid_prices) || (N == 0)) {
     stop("Number of prices to match must agree with number of options (",N,") in the calibration of variance")
   } else {
     flog.info("fit_variance_cumulation on %s options...", N,
@@ -839,7 +828,7 @@ fit_variance_cumulation = function(S0, eq_options, mid_prices, spreads=NULL,
     iv
   }
   override_Tmax = NA
-  solver_tolerance = max(0.005, 0.005 * abs(mid_prices))
+  solver_tolerance = pmax(0.005, 0.005 * abs(mid_prices))
   vols = as.numeric(initial_vols_guess)
   if (force_same_grid) {
     override_Tmax = eq_options[[length(eq_options)]]$maturity
@@ -909,7 +898,7 @@ fit_variance_cumulation = function(S0, eq_options, mid_prices, spreads=NULL,
       } else {
         distance = computed_price - mid_prices[[i]]
         flog.info("Term struct solver for instrument %s tested vola %s and found price %s which is distance %s from %s",
-                  i, v, computed_price, civ, distance, mid_prices[[i]],
+                  i, v, computed_price, distance, mid_prices[[i]],
                   name='ragtop.calibration.fit_variance_cumulation.distance')
       }
       distance
@@ -1004,7 +993,7 @@ fit_variance_cumulation = function(S0, eq_options, mid_prices, spreads=NULL,
 #'   \code{\link{find_present_value}}
 #' @param h Base default intensity
 #' @inheritParams fit_to_option_market
-#' @export price_with_intensity_link
+#' @export
 price_with_intensity_link = function(p, s, h,
                                      variance_instruments,
                                      variance_instrument_prices,
@@ -1054,7 +1043,7 @@ price_with_intensity_link = function(p, s, h,
 #' @inheritParams price_with_intensity_link
 #' @inheritParams find_present_value
 #' @seealso \code{\link{price_with_intensity_link}} for the pricing function
-#' @export penalty_with_intensity_link
+#' @export
 penalty_with_intensity_link = function(p, s, h,
                                        variance_instruments,
                                        variance_instrument_prices,
@@ -1155,8 +1144,7 @@ penalty_with_intensity_link = function(p, s, h,
 #' @param ... Further arguments passed to \code{\link{penalty_with_intensity_link}}
 #' @seealso \code{\link{penalty_with_intensity_link}} for the penalty function used
 #'   as an optimization target
-#' @import futile.logger
-#' @export fit_to_option_market
+#' @export
 fit_to_option_market = function(variance_instruments,
                                 variance_instrument_prices,
                                 variance_instrument_spreads,
@@ -1180,9 +1168,9 @@ fit_to_option_market = function(variance_instruments,
                           p=rep(test_p, each=length(ss)),
                           penalty=rep(NA, length(ss)*length(test_p)))
   flog.info("Will populate penalties table:\n%s",
-            paste(utils::capture.output(pens_found), "\n", sep=""),
+            paste0(utils::capture.output(pens_found), "\n"),
             name='ragtop.calibration.fit_to_option_market')
-  for (ix_s in (1:length(ss))) {
+  for (ix_s in seq_along(ss)) {
     s = ss[[ix_s]]
     pen = function(p) {
       flog.info("About to compute penalty with p=%s, s=%s, h=%s, ix_s=%s",
@@ -1205,7 +1193,7 @@ fit_to_option_market = function(variance_instruments,
                               flog.warn("Could not compute penalty with p=%s, s=%s, h=%s, returning NA.  Message was \n%s",
                                         p,s,h,errmsg,
                                         name='ragtop.calibration.fit_to_option_market.compute')
-                              return(NA)
+                              return(NA_real_)
                             },finally={
                               flog.info("Computed penalty with p=%s, s=%s, h=%s, ix_s=%s",
                                         p,s,h,ix_s,
@@ -1215,11 +1203,11 @@ fit_to_option_market = function(variance_instruments,
                 pen_result, p,s,h,ix_s,
                 name='ragtop.calibration.fit_to_option_market')
       flog.info("Found penalties are now:\n%s",
-                paste(utils::capture.output(pens_found), "\n", sep=""),
+                paste0(utils::capture.output(pens_found), "\n"),
                 name='ragtop.calibration.fit_to_option_market.compute')
       pen_result
     }
-    for (ix_p in (1:length(test_p))) {
+    for (ix_p in seq_along(test_p)) {
       p = test_p[[ix_p]]
       pen_s_p = pen(p)
       pens_found$penalty[pens_found$s==ss[[ix_s]] & pens_found$p==p] = pen_s_p
@@ -1228,7 +1216,7 @@ fit_to_option_market = function(variance_instruments,
               s,
               name='ragtop.calibration.fit_to_option_market.apply')
   }
-  best = pens_found[pens_found$penalty<=1.01*min(pens_found$penalty, na.rm=T),][1,]
+  best = pens_found[pens_found$penalty<=1.01*min(pens_found$penalty, na.rm=TRUE),][1,]
   # TODO: Use some GP Kriging
   best_p = best['p'][[1]]
   best_s = best['s'][[1]]
@@ -1248,7 +1236,7 @@ fit_to_option_market = function(variance_instruments,
                       flog.error("Unable to use s=%s p=%s to form variance, even though we calibrated:\n%s",
                                 s,p,errmsg,
                                 name='ragtop.calibration.fit_to_option_market')
-                      return(NA)
+                      return(NA_real_)
                     }
   )
   list(h=h, s=best_s, p=best_p, default_intensity_fcn=def_intens_f,
@@ -1267,7 +1255,7 @@ fit_to_option_market = function(variance_instruments,
 #' @param S0 Current underlying price
 #' @param base_default_intensity Overall default intensity (in natural units)
 #' @param min_maturity Minimum option maturity to allow in calibration
-#' @param min_moneyness Maximum option strike as a proportion of S0 to allow in calibration
+#' @param min_moneyness Minimum option strike as a proportion of S0 to allow in calibration
 #' @param max_moneyness Maximum option strike as a proportion of S0  to allow in calibration
 #' @param options_df A data frame of American option details.  It should
 #' have columns \code{callput}, \code{K}, \code{time},
@@ -1277,7 +1265,7 @@ fit_to_option_market = function(variance_instruments,
 #'   arguments \code{T}, \code{t}
 #' @family Equity Dependent Default Intensity
 #' @seealso \code{\link{fit_to_option_market}} the underlying fit algorithm
-#' @export fit_to_option_market_df
+#' @export
 fit_to_option_market_df = function(
   S0 = ragtop::TSLAMarket$S0,
   discount_factor_fcn = spot_to_df_fcn(ragtop::TSLAMarket$risk_free_rates),
@@ -1294,7 +1282,7 @@ fit_to_option_market_df = function(
   }
 
   dfrow_bsimpvol = function(x, tgt_field='mid') {
-    if (any(is.na(x))) {
+    if (anyNA(x)) {
       iv = NA
     } else {
       iv = implied_volatility_with_term_struct(x[tgt_field], x['callput'],
@@ -1322,7 +1310,7 @@ fit_to_option_market_df = function(
   atm_put_prices = options_df$mid[atm_put_ix]
   atm_put_spreads = options_df$spread[atm_put_ix]
 
-  valid_moneyness_ix = ((options_df$K > options_df*S0) &
+  valid_moneyness_ix = ((options_df$K > min_moneyness*S0) &
                           (options_df$K < max_moneyness*S0))
   other_opt_ix = (options_df$time>min_maturity) & (!atm_put_ix) & valid_moneyness_ix
 

@@ -15,9 +15,6 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with ragtop.  If not, see <http://www.gnu.org/licenses/>.
-library(stats)
-library(futile.logger)
-
 
 # TODO: Should we stop using t and T as variables since they could
 #       be confused with the transpose function?
@@ -61,7 +58,6 @@ library(futile.logger)
 #'   \item{\code{N}}{The number of space points}
 #'   \item{\code{z}}{Locations of space points}
 #' }
-#' @import futile.logger
 construct_implicit_grid_structure = function(tenors, M, S0, K, c, sigma, structure_constant, std_devs_width,
                                              min_z_width=0)
 {
@@ -103,8 +99,7 @@ construct_implicit_grid_structure = function(tenors, M, S0, K, c, sigma, structu
 #' @return A list with elements \code{super}, \code{diag} and \code{sub}
 #'   containing the superdiagonal, diagonal and subdiagonal of the implicit
 #'   timestep differencing matrix
-#' @import futile.logger
-#' @export construct_tridiagonals
+#' @export
 construct_tridiagonals = function(sigma, structure_constant, drift)
 {
   N = length(drift)
@@ -152,16 +147,16 @@ construct_tridiagonals = function(sigma, structure_constant, drift)
 #'   arguments \code{T}, \code{t}
 #' @param prev_grid_values A vector of space grid values from the
 #'  previously calculated timestep
-#' @param instrument If not NULL/NA,  must have a \code{recovery_fcn} and
+#' @param instrument If not \code{NULL}/\code{NA},  must have a \code{recovery_fcn} and
 #'  an \code{optionality_fcn} though those properties are
-#'  themselves allowed to be NA.
+#'  themselves allowed to be \code{NA}.
 #' @param dividends A \code{data.frame} with columns \code{time}, \code{fixed},
 #'   and \code{proportional}.  Dividend size at the given \code{time} is
 #'   then expected to be equal to \code{fixed + proportional * S / S0}
 #' @import limSolve
 #' @return Grid values for the instrument after taking the implicit timestep
 #' @family Implicit Grid Solver
-#' @export take_implicit_timestep
+#' @export
 take_implicit_timestep = function(t, S, full_discount_factor,
                                   local_discount_factor,
                                   discount_factor_fcn,
@@ -281,7 +276,7 @@ timestep_instruments = function(z, prev_grid_values,
   flog.info("Structure constant at %s for dt=%s is %s.", t, dt, structure_constant,
             name='ragtop.implicit.timestep')
   matrix_entries = construct_tridiagonals(sigma, structure_constant, drift=h*dt/dz)
-  for (k in (1:length(instruments))) {
+  for (k in seq_along(instruments)) {
     instrument = instruments[[k]]
     instr_name = names(instruments)[[k]]
     prev_instr_grid_values = div_adj_grid_values[,k]
@@ -348,7 +343,7 @@ infer_conforming_time_grid = function(min_num_time_steps, Tmax, instruments=NULL
   time_grid = seq(from=0, to=Tmax, length.out=1+min_num_time_steps)
   if (!is.blank(instruments)) {
     # Cycle through instruments, include their maturities and critical times
-    for (k in (1:length(instruments))) {
+    for (k in seq_along(instruments)) {
       instrument = instruments[[k]]
       time_grid = c(time_grid, instrument$maturity)
       instr_name = names(instruments)[[k]]
@@ -409,7 +404,7 @@ infer_conforming_time_grid = function(min_num_time_steps, Tmax, instruments=NULL
 #' @return A grid of present values of derivative prices, adapted to \code{z} at
 #'   each timestep.  Time zero value will appear in the first index.
 #' @family Implicit Grid Solver
-#' @export integrate_pde
+#' @export
 integrate_pde <- function(z, min_num_time_steps, S0, Tmax, instruments,
                             stock_level_fcn,
                             discount_factor_fcn,
@@ -418,6 +413,11 @@ integrate_pde <- function(z, min_num_time_steps, S0, Tmax, instruments,
                             dividends=NULL)
 {
   time_pts = infer_conforming_time_grid(min_num_time_steps, Tmax, instruments=instruments)
+  # Warn (but do not stop) if the supplied term-structure functions are ill-behaved
+  check_discount_factor_fcn(discount_factor_fcn, time_pts)
+  check_variance_cumulation_fcn(variance_cumulation_fcn, time_pts)
+  # Guard the intensity function so its many calls warn at most once about negatives
+  default_intensity_fcn = warn_once_negative_default_intensity(default_intensity_fcn)
   num_time_pts = length(time_pts)
   num_time_steps = num_time_pts-1
   num_space_pts = length(z)
@@ -428,14 +428,14 @@ integrate_pde <- function(z, min_num_time_steps, S0, Tmax, instruments,
   flog.info("Discount factor to Tmax=%s is %s", Tmax, df_final, name='ragtop.implicit.setup')
   # Set the initial condition for the PDE from instrument values at
   #  maximum time, discounted by df_final according to our change of variables
-  for (k in (1:length(instruments))) {
+  for (k in seq_along(instruments)) {
     instrument = instruments[[k]]
     instr_name = names(instruments)[[k]]
     if (instrument$maturity>=Tmax) {
       undisc_terminal_vals = instrument$terminal_values(0*S_final, S=S_final,
                                                         t=instrument$maturity,
                                                         discount_factor_fctn=discount_factor_fcn)
-      if (any(is.na(undisc_terminal_vals))) {  # Make sure nobody gave us a crazy instrument object
+      if (anyNA(undisc_terminal_vals)) {  # Make sure nobody gave us a crazy instrument object
         flog.error("Bug in instrument class.  Terminal values at Tmax=%s for %s returned NA in %s of %s cases",
                    Tmax, instr_name, sum(is.na(undisc_terminal_vals)),
                    length(undisc_terminal_vals),
@@ -477,7 +477,7 @@ integrate_pde <- function(z, min_num_time_steps, S0, Tmax, instruments,
 #'   be written.  Its size should be at least
 #'   \code{(1+starting_time_step, length(z), length(instruments))}
 #' @param starting_time_step The index into time_pts of the first timestep
-#'  to be emplyed.  This must be no larger than the length of time_pts, minus one
+#'  to be employed.  This must be no larger than the length of time_pts, minus one
 #' @param time_pts Time nodes to be treated on the grid
 #' @param original_grid_values Grid values to timestep from
 #' @param instruments A list of instruments to be priced.  Each
@@ -488,7 +488,7 @@ integrate_pde <- function(z, min_num_time_steps, S0, Tmax, instruments,
 #'   of values at the first time point, adapted to \code{z} at
 #'   each timestep.  Time zero value will appear in the first index of any grid.
 #' @family Implicit Grid Solver
-#' @export iterate_grid_from_timestep
+#' @export
 iterate_grid_from_timestep = function(starting_time_step, time_pts, z, S0, instruments,
                                       stock_level_fcn,
                                       discount_factor_fcn,
@@ -555,7 +555,7 @@ iterate_grid_from_timestep = function(starting_time_step, time_pts, z, S0, instr
 #' @family Equity Dependent Default Intensity
 #' @family Implicit Grid Solver
 #'
-#' @export form_present_value_grid
+#' @export
 form_present_value_grid = function(S0, num_time_steps, instruments,
                               const_volatility=0.5, const_short_rate=0,
                               const_default_intensity=0, override_Tmax=NA,
@@ -576,7 +576,7 @@ form_present_value_grid = function(S0, num_time_steps, instruments,
   }
   K = S0
   # Get a strike and maximum maturity from the instruments
-  for (k in (1:length(instruments))) {
+  for (k in seq_along(instruments)) {
     instrument = instruments[[k]]
     instr_name = names(instruments)[[k]]
     instr_fields = instrument$getRefClass()$fields()
@@ -655,7 +655,7 @@ form_present_value_grid = function(S0, num_time_steps, instruments,
 #' @family Equity Dependent Default Intensity
 #' @family Implicit Grid Solver
 #'
-#' @export find_present_value
+#' @export
 find_present_value = function(S0, num_time_steps, instruments,
                                    const_volatility=0.5, const_short_rate=0, const_default_intensity=0, override_Tmax=NA,
                                    discount_factor_fcn = function(T, t, ...){exp(-const_short_rate*(T-t))},
@@ -692,7 +692,7 @@ find_present_value = function(S0, num_time_steps, instruments,
                                                structure_constant=structure_constant,
                                                std_devs_width=std_devs_width)
   present_values = list()
-  for (k in (1:length(instruments))) {
+  for (k in seq_along(instruments)) {
     instrument = instruments[[k]]
     instr_name = names(instruments)[[k]]
     present_values[[instr_name]] = stats::spline(

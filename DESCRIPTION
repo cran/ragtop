@@ -1,36 +1,35 @@
-Package: ragtop
 Type: Package
+Package: ragtop
 Title: Pricing Equity Derivatives with Extensions of Black-Scholes
-Version: 1.2.0
-Date: 2025-07-09
-Authors@R: person(given = c("Brian", "K."),
-                   family = "Boonstra",
-                   role = c("aut", "cre"),
-                   email = "ragtop@boonstra.org")
-Description: Algorithms to price American and European
-    equity options, convertible bonds and a
-    variety of other financial derivatives. It uses an
-    extension of the usual Black-Scholes model in which
-    jump to default may occur at a probability specified
-    by a power-law link between stock price and hazard
-    rate as found in the paper by Takahashi, Kobayashi,
-    and Nakagawa (2001) <doi:10.3905/jfi.2001.319302>.  We
-    use ideas and techniques from Andersen and
-    Buffum (2002) <doi:10.2139/ssrn.355308> and
-    Linetsky (2006) <doi:10.1111/j.1467-9965.2006.00271.x>.
-Depends: limSolve (>= 2.0.1), futile.logger (>= 1.4.1), R (>= 3.5),
-        methods (>= 3.2.2)
-Suggests: testthat, roxygen2, knitr, rmarkdown, reshape2, stringr,
-        ggplot2, MASS, RColorBrewer, BondValuation, R.cache, lubridate,
-        treasury
+Version: 1.2.1
+Date: 2026-06-15
+Authors@R: 
+    person(c("Brian", "K."), "Boonstra", , "ragtop@boonstra.org", role = c("aut", "cre"))
+Description: Algorithms to price American and European equity options,
+    convertible bonds and a variety of other financial derivatives. It
+    uses an extension of the usual Black-Scholes model in which jump to
+    default may occur at a probability specified by a power-law link
+    between stock price and hazard rate as found in the paper by
+    Takahashi, Kobayashi, and Nakagawa (2001)
+    <doi:10.3905/jfi.2001.319302>.  We use ideas and techniques from
+    Andersen and Buffum (2002) <doi:10.2139/ssrn.355308> and Linetsky
+    (2006) <doi:10.1111/j.1467-9965.2006.00271.x>.
 License: GPL (>= 2)
-Encoding: UTF-8
-LazyData: TRUE
+Depends: R (>= 3.5)
+Imports: futile.logger (>= 1.4.1), limSolve (>= 2.0.1), methods (>=
+        3.2.2), stats
+Suggests: BondValuation, ggplot2, knitr, lubridate, MASS, R.cache,
+        RColorBrewer, reshape2, rmarkdown, roxygen2, stringr, testthat
+        (>= 3.0.0), treasury
 VignetteBuilder: knitr
-RoxygenNote: 7.3.2
+Config/roxygen2/version: 8.0.0
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 8.0.0
 NeedsCompilation: no
-Packaged: 2025-07-10 20:18:25 UTC; brian
+Packaged: 2026-06-15 14:17:38 UTC; brian
 Author: Brian K. Boonstra [aut, cre]
 Maintainer: Brian K. Boonstra <ragtop@boonstra.org>
 Repository: CRAN
-Date/Publication: 2025-07-10 21:40:02 UTC
+Date/Publication: 2026-06-15 15:20:02 UTC

@@ -1,7 +1,3 @@
-library(ragtop)
-library(futile.logger)
-context("Equity Options")
-
 flog.threshold(WARN)
 flog.threshold(WARN, name="ragtop")
 flog.threshold(ERROR, name='ragtop.implicit.setup.width')
