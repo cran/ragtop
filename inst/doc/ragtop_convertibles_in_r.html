@@ -342,7 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 Extensions of Black-Scholes</h1>
 <h4 class="author">Brian K. Boonstra</h4>
 <h4 class="date">First Version: May 20, 2016 This Version:
-2026-06-15</h4>
+2026-06-19</h4>
 
 
 
@@ -948,46 +948,50 @@ higher in accuracy. To that end, we can use the helper function
 <span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
 <span id="cb38-3"><a href="#cb38-3" tabindex="-1"></a>      BondValuation<span class="sc">::</span><span class="fu">AnnivDates</span>(</span>
 <span id="cb38-4"><a href="#cb38-4" tabindex="-1"></a>        <span class="at">Em=</span><span class="fu">as.Date</span>(<span class="st">&#39;2018-06-11&#39;</span>),    <span class="co"># Issue date</span></span>
-<span id="cb38-5"><a href="#cb38-5" tabindex="-1"></a>        <span class="at">Mat=</span><span class="fu">as.Date</span>(<span class="st">&#39;2024-06-15&#39;</span>), </span>
-<span id="cb38-6"><a href="#cb38-6" tabindex="-1"></a>        <span class="at">CpY=</span><span class="dv">2</span>, </span>
+<span id="cb38-5"><a href="#cb38-5" tabindex="-1"></a>        <span class="at">Mat=</span><span class="fu">as.Date</span>(<span class="st">&#39;2024-06-15&#39;</span>),</span>
+<span id="cb38-6"><a href="#cb38-6" tabindex="-1"></a>        <span class="at">CpY=</span><span class="dv">2</span>,</span>
 <span id="cb38-7"><a href="#cb38-7" tabindex="-1"></a>        <span class="at">FIPD=</span><span class="fu">as.Date</span>(<span class="st">&#39;2018-12-15&#39;</span>),   <span class="co"># First coupon</span></span>
 <span id="cb38-8"><a href="#cb38-8" tabindex="-1"></a>        <span class="at">FIAD=</span><span class="fu">as.Date</span>(<span class="st">&#39;2018-06-15&#39;</span>),   <span class="co"># Beginning of first coupon accrual</span></span>
 <span id="cb38-9"><a href="#cb38-9" tabindex="-1"></a>        <span class="at">RV=</span><span class="dv">1000</span>,   <span class="co"># Notional</span></span>
-<span id="cb38-10"><a href="#cb38-10" tabindex="-1"></a>        <span class="at">Coup=</span><span class="fl">0.25</span>, </span>
+<span id="cb38-10"><a href="#cb38-10" tabindex="-1"></a>        <span class="at">Coup=</span><span class="fl">0.25</span>,</span>
 <span id="cb38-11"><a href="#cb38-11" tabindex="-1"></a>        <span class="at">DCC=</span><span class="fu">which</span>(BondValuation<span class="sc">::</span>List.DCC<span class="sc">$</span>DCC.Name<span class="sc">==</span><span class="st">&#39;30/360&#39;</span>),  <span class="co"># 30/360 daycount convention</span></span>
 <span id="cb38-12"><a href="#cb38-12" tabindex="-1"></a>        <span class="at">EOM=</span><span class="dv">0</span></span>
-<span id="cb38-13"><a href="#cb38-13" tabindex="-1"></a>      )</span>
-<span id="cb38-14"><a href="#cb38-14" tabindex="-1"></a>  )</span>
-<span id="cb38-15"><a href="#cb38-15" tabindex="-1"></a>} <span class="cf">else</span> <span class="cn">NULL</span></span>
-<span id="cb38-16"><a href="#cb38-16" tabindex="-1"></a></span>
-<span id="cb38-17"><a href="#cb38-17" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(twitter_bv)) {</span>
-<span id="cb38-18"><a href="#cb38-18" tabindex="-1"></a>  twitter_specs <span class="ot">=</span> ragtop<span class="sc">::</span><span class="fu">detail_from_AnnivDates</span>(</span>
-<span id="cb38-19"><a href="#cb38-19" tabindex="-1"></a>      twitter_bv, </span>
-<span id="cb38-20"><a href="#cb38-20" tabindex="-1"></a>      <span class="at">as_of=</span><span class="fu">as.Date</span>(<span class="st">&#39;2018-02-15&#39;</span>)</span>
-<span id="cb38-21"><a href="#cb38-21" tabindex="-1"></a>    )</span>
-<span id="cb38-22"><a href="#cb38-22" tabindex="-1"></a></span>
-<span id="cb38-23"><a href="#cb38-23" tabindex="-1"></a>  twtr_cb <span class="ot">=</span> ragtop<span class="sc">::</span><span class="fu">ConvertibleBond</span>(</span>
-<span id="cb38-24"><a href="#cb38-24" tabindex="-1"></a>      <span class="at">maturity=</span>twitter_specs<span class="sc">$</span>maturity, </span>
-<span id="cb38-25"><a href="#cb38-25" tabindex="-1"></a>      <span class="at">conversion_ratio=</span><span class="fl">17.5001</span>, </span>
-<span id="cb38-26"><a href="#cb38-26" tabindex="-1"></a>      <span class="at">notional=</span>twitter_specs<span class="sc">$</span>notional,</span>
-<span id="cb38-27"><a href="#cb38-27" tabindex="-1"></a>      <span class="at">coupons=</span>twitter_specs<span class="sc">$</span>coupons,</span>
-<span id="cb38-28"><a href="#cb38-28" tabindex="-1"></a>      <span class="at">discount_factor_fcn =</span> disct_fcn,</span>
-<span id="cb38-29"><a href="#cb38-29" tabindex="-1"></a>      <span class="at">name=</span><span class="st">&#39;TwitterConvertWithGreenshoe&#39;</span></span>
-<span id="cb38-30"><a href="#cb38-30" tabindex="-1"></a>    )</span>
-<span id="cb38-31"><a href="#cb38-31" tabindex="-1"></a></span>
-<span id="cb38-32"><a href="#cb38-32" tabindex="-1"></a>  pvs <span class="ot">=</span> ragtop<span class="sc">::</span><span class="fu">find_present_value</span>(</span>
-<span id="cb38-33"><a href="#cb38-33" tabindex="-1"></a>      <span class="at">S0=</span><span class="fl">33.06</span>,</span>
-<span id="cb38-34"><a href="#cb38-34" tabindex="-1"></a>      <span class="at">num_time_steps=</span><span class="dv">200</span>,</span>
-<span id="cb38-35"><a href="#cb38-35" tabindex="-1"></a>      <span class="at">instruments=</span><span class="fu">list</span>(<span class="at">TWTR=</span>twtr_cb),</span>
-<span id="cb38-36"><a href="#cb38-36" tabindex="-1"></a>      <span class="at">const_volatility=</span><span class="fl">0.47</span>,</span>
-<span id="cb38-37"><a href="#cb38-37" tabindex="-1"></a>      <span class="at">const_default_intensity=</span><span class="fl">0.01</span>,</span>
-<span id="cb38-38"><a href="#cb38-38" tabindex="-1"></a>      <span class="at">discount_factor_fcn=</span>disct_fcn,</span>
-<span id="cb38-39"><a href="#cb38-39" tabindex="-1"></a>    )</span>
-<span id="cb38-40"><a href="#cb38-40" tabindex="-1"></a></span>
-<span id="cb38-41"><a href="#cb38-41" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="st">&quot;Twitter bond value is&quot;</span>, pvs<span class="sc">$</span>TWTR)</span>
-<span id="cb38-42"><a href="#cb38-42" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb38-43"><a href="#cb38-43" tabindex="-1"></a>  <span class="st">&quot;BondValuation::AnnivDates is unavailable on this platform; skipping this example.&quot;</span></span>
-<span id="cb38-44"><a href="#cb38-44" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb38-13"><a href="#cb38-13" tabindex="-1"></a>      ),</span>
+<span id="cb38-14"><a href="#cb38-14" tabindex="-1"></a>      <span class="co"># BondValuation::AnnivDates() errors on some platforms (e.g. macOS</span></span>
+<span id="cb38-15"><a href="#cb38-15" tabindex="-1"></a>      <span class="co">#  arm64); fall back to skipping this example rather than failing the</span></span>
+<span id="cb38-16"><a href="#cb38-16" tabindex="-1"></a>      <span class="co">#  whole vignette build</span></span>
+<span id="cb38-17"><a href="#cb38-17" tabindex="-1"></a>      <span class="at">error =</span> <span class="cf">function</span>(e) <span class="cn">NULL</span></span>
+<span id="cb38-18"><a href="#cb38-18" tabindex="-1"></a>  )</span>
+<span id="cb38-19"><a href="#cb38-19" tabindex="-1"></a>} <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb38-20"><a href="#cb38-20" tabindex="-1"></a></span>
+<span id="cb38-21"><a href="#cb38-21" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(twitter_bv)) {</span>
+<span id="cb38-22"><a href="#cb38-22" tabindex="-1"></a>  twitter_specs <span class="ot">=</span> ragtop<span class="sc">::</span><span class="fu">detail_from_AnnivDates</span>(</span>
+<span id="cb38-23"><a href="#cb38-23" tabindex="-1"></a>      twitter_bv, </span>
+<span id="cb38-24"><a href="#cb38-24" tabindex="-1"></a>      <span class="at">as_of=</span><span class="fu">as.Date</span>(<span class="st">&#39;2018-02-15&#39;</span>)</span>
+<span id="cb38-25"><a href="#cb38-25" tabindex="-1"></a>    )</span>
+<span id="cb38-26"><a href="#cb38-26" tabindex="-1"></a></span>
+<span id="cb38-27"><a href="#cb38-27" tabindex="-1"></a>  twtr_cb <span class="ot">=</span> ragtop<span class="sc">::</span><span class="fu">ConvertibleBond</span>(</span>
+<span id="cb38-28"><a href="#cb38-28" tabindex="-1"></a>      <span class="at">maturity=</span>twitter_specs<span class="sc">$</span>maturity, </span>
+<span id="cb38-29"><a href="#cb38-29" tabindex="-1"></a>      <span class="at">conversion_ratio=</span><span class="fl">17.5001</span>, </span>
+<span id="cb38-30"><a href="#cb38-30" tabindex="-1"></a>      <span class="at">notional=</span>twitter_specs<span class="sc">$</span>notional,</span>
+<span id="cb38-31"><a href="#cb38-31" tabindex="-1"></a>      <span class="at">coupons=</span>twitter_specs<span class="sc">$</span>coupons,</span>
+<span id="cb38-32"><a href="#cb38-32" tabindex="-1"></a>      <span class="at">discount_factor_fcn =</span> disct_fcn,</span>
+<span id="cb38-33"><a href="#cb38-33" tabindex="-1"></a>      <span class="at">name=</span><span class="st">&#39;TwitterConvertWithGreenshoe&#39;</span></span>
+<span id="cb38-34"><a href="#cb38-34" tabindex="-1"></a>    )</span>
+<span id="cb38-35"><a href="#cb38-35" tabindex="-1"></a></span>
+<span id="cb38-36"><a href="#cb38-36" tabindex="-1"></a>  pvs <span class="ot">=</span> ragtop<span class="sc">::</span><span class="fu">find_present_value</span>(</span>
+<span id="cb38-37"><a href="#cb38-37" tabindex="-1"></a>      <span class="at">S0=</span><span class="fl">33.06</span>,</span>
+<span id="cb38-38"><a href="#cb38-38" tabindex="-1"></a>      <span class="at">num_time_steps=</span><span class="dv">200</span>,</span>
+<span id="cb38-39"><a href="#cb38-39" tabindex="-1"></a>      <span class="at">instruments=</span><span class="fu">list</span>(<span class="at">TWTR=</span>twtr_cb),</span>
+<span id="cb38-40"><a href="#cb38-40" tabindex="-1"></a>      <span class="at">const_volatility=</span><span class="fl">0.47</span>,</span>
+<span id="cb38-41"><a href="#cb38-41" tabindex="-1"></a>      <span class="at">const_default_intensity=</span><span class="fl">0.01</span>,</span>
+<span id="cb38-42"><a href="#cb38-42" tabindex="-1"></a>      <span class="at">discount_factor_fcn=</span>disct_fcn,</span>
+<span id="cb38-43"><a href="#cb38-43" tabindex="-1"></a>    )</span>
+<span id="cb38-44"><a href="#cb38-44" tabindex="-1"></a></span>
+<span id="cb38-45"><a href="#cb38-45" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="st">&quot;Twitter bond value is&quot;</span>, pvs<span class="sc">$</span>TWTR)</span>
+<span id="cb38-46"><a href="#cb38-46" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb38-47"><a href="#cb38-47" tabindex="-1"></a>  <span class="st">&quot;BondValuation::AnnivDates is unavailable on this platform; skipping this example.&quot;</span></span>
+<span id="cb38-48"><a href="#cb38-48" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>[1] &quot;Twitter bond value is 1031.83208503188&quot;</code></pre>
 </div>
 <div id="references" class="section level2">
