@@ -233,6 +233,17 @@ cb_value = form_present_value_grid(
   discount_factor_fcn = disct_fcn,
   variance_cumulation_fcn=calib_varnce$cumulation_function)
 
+## ----greeks_cb, echo=TRUE, comment=""-----------------------------------------
+cb_value_and_greeks = ragtop::find_greeks(
+  greeks=c("delta", "gamma", "vega", "credit_dv01"),
+  S0=S0, 
+  instruments=list(CB=cb),
+  num_time_steps=250,
+  default_intensity_fcn=calibrated_intensity_f,
+  discount_factor_fcn = disct_fcn,
+  variance_cumulation_fcn=calib_varnce$cumulation_function)
+round(unlist(cb_value_and_greeks),4)
+
 ## ----grid_cb_delta, echo=TRUE, comment=""-------------------------------------
 cbprices = ragtop::form_present_value_grid(
   S0=S0, grid_center=S0,
@@ -268,19 +279,15 @@ twitter_bv = if (requireNamespace("BondValuation", quietly = TRUE)) {
   tryCatch(
       BondValuation::AnnivDates(
         Em=as.Date('2018-06-11'),    # Issue date
-        Mat=as.Date('2024-06-15'),
-        CpY=2,
+        Mat=as.Date('2024-06-15'), 
+        CpY=2, 
         FIPD=as.Date('2018-12-15'),   # First coupon
         FIAD=as.Date('2018-06-15'),   # Beginning of first coupon accrual
         RV=1000,   # Notional
-        Coup=0.25,
+        Coup=0.25, 
         DCC=which(BondValuation::List.DCC$DCC.Name=='30/360'),  # 30/360 daycount convention
         EOM=0
-      ),
-      # BondValuation::AnnivDates() errors on some platforms (e.g. macOS
-      #  arm64); fall back to skipping this example rather than failing the
-      #  whole vignette build
-      error = function(e) NULL
+      )
   )
 } else NULL
 
